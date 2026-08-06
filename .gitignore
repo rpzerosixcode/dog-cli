@@ -1,0 +1,29 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Bundle
+/.bundle/
+/vendor/bundle/
+
+# Logs
+*.log
+/log/
+
+# Temp
+/tmp/
+/coverage/
+/test/tmp/
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Ruby
+*.gem
+/.rspec_status

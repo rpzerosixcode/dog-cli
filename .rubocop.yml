@@ -1,0 +1,44 @@
+# frozen_string_literal: true
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 3.0
+  Exclude:
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "coverage/**/*"
+
+# Project convention: double quotes in strings
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+# Line ending consistency according to the operating system
+Layout/EndOfLine:
+  EnforcedStyle: native
+
+# Language/region of comments and documentation in English
+Style/Documentation:
+  Enabled: true
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+
+Metrics/ClassLength:
+  Max: 100
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Max: 20
+
+# RSpec test files commonly have longer blocks
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+
+# Placeholder structure of the project, will be implemented in the future
+Lint/EmptyClass:
+  Exclude:
+    - "lib/dog/client.rb"
