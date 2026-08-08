@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
+require "tmpdir"
+
 RSpec.describe Dog::CLI do
   let(:client) { instance_double(Dog::Client) }
-  let(:cli) { described_class.new([], client: client) }
+  let(:downloader) { instance_double(Dog::Downloader) }
+  let(:cli) { described_class.new([], client: client, downloader: downloader) }
   let(:image_url) { "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg" }
 
   def set_options(cli, **overrides)
-    defaults = { breed: nil, count: 1, format: "plain" }
+    defaults = { breed: nil, count: 1, format: "plain", download: false, output: nil }
     cli.options = defaults.merge(overrides)
   end
 
@@ -62,6 +65,97 @@ RSpec.describe Dog::CLI do
 
       it "outputs the images as JSON" do
         expect { cli.random }.to output("#{JSON.generate([image_url])}\n").to_stdout
+      end
+    end
+
+    context "when downloading images" do
+      let(:saved_path) { File.join(Dir.tmpdir, "n02088094_1003.jpg") }
+
+      before do
+        set_options(cli, download: true)
+        allow(client).to receive(:random_image).with(count: 1, breed: nil).and_return(image_url)
+        allow(downloader).to receive(:download).with(image_url).and_return(saved_path)
+      end
+
+      it "downloads the image and outputs feedback to stderr" do
+        expect { cli.random }.to output(
+          "Downloading #{image_url}...\nSaved to #{saved_path}\nDownloaded 1 image(s) successfully.\n"
+        ).to_stderr
+      end
+
+      it "does not output the image URL to stdout" do
+        expect { cli.random }.to_not output(/#{image_url}/).to_stdout
+      end
+    end
+
+    context "when downloading multiple images" do
+      let(:image_urls) do
+        [
+          "https://images.dog.ceo/breeds/hound-afghan/n02088094_1003.jpg",
+          "https://images.dog.ceo/breeds/hound-afghan/n02088094_1004.jpg"
+        ]
+      end
+      let(:saved_paths) do
+        [
+          File.join(Dir.tmpdir, "n02088094_1003.jpg"),
+          File.join(Dir.tmpdir, "n02088094_1004.jpg")
+        ]
+      end
+
+      before do
+        set_options(cli, count: 2, download: true)
+        allow(client).to receive(:random_image).with(count: 2, breed: nil).and_return(image_urls)
+        allow(downloader).to receive(:download).with(image_urls[0]).and_return(saved_paths[0])
+        allow(downloader).to receive(:download).with(image_urls[1]).and_return(saved_paths[1])
+      end
+
+      it "downloads each image and outputs feedback to stderr" do
+        expect { cli.random }.to output(
+          "Downloading #{image_urls[0]}...\nSaved to #{saved_paths[0]}\n" \
+          "Downloading #{image_urls[1]}...\nSaved to #{saved_paths[1]}\n" \
+          "Downloaded 2 image(s) successfully.\n"
+        ).to_stderr
+      end
+    end
+
+    context "when downloading with a custom output directory" do
+      let(:custom_dir) { Dir.mktmpdir }
+      let(:custom_downloader) { instance_double(Dog::Downloader) }
+      let(:saved_path) { File.join(custom_dir, "n02088094_1003.jpg") }
+
+      before do
+        set_options(cli, download: true, output: custom_dir)
+        allow(client).to receive(:random_image).with(count: 1, breed: nil).and_return(image_url)
+        allow(Dog::Downloader).to receive(:new).with(custom_dir).and_return(custom_downloader)
+        allow(custom_downloader).to receive(:download).with(image_url).and_return(saved_path)
+      end
+
+      it "uses a downloader with the custom output directory" do
+        expect { cli.random }.to output(
+          "Downloading #{image_url}...\nSaved to #{saved_path}\nDownloaded 1 image(s) successfully.\n"
+        ).to_stderr
+      end
+    end
+
+    context "when the download fails" do
+      before do
+        set_options(cli, download: true)
+        allow(client).to receive(:random_image).with(count: 1, breed: nil).and_return(image_url)
+        allow(downloader).to receive(:download).with(image_url).and_raise(
+          Dog::Errors::DownloadError, "Failed to download #{image_url}: HTTP 404"
+        )
+        allow(cli).to receive(:exit)
+      end
+
+      it "outputs an error message to stderr" do
+        expect { cli.random }.to output(
+          "Downloading #{image_url}...\nError: Failed to download #{image_url}: HTTP 404\n"
+        ).to_stderr
+      end
+
+      it "exits with status 1" do
+        cli.random
+        expect(cli).to have_received(:exit).with(1)
       end
     end
 

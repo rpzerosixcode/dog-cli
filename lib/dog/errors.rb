@@ -11,5 +11,8 @@ module Dog
 
     # Raised when the Dog CEO API returns an unexpected response.
     class InvalidResponseError < Error; end
+
+    # Raised when an image fails to download.
+    class DownloadError < Error; end
   end
 end

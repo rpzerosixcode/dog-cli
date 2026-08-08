@@ -3,6 +3,7 @@
 require_relative "dog/version"
 require_relative "dog/errors"
 require_relative "dog/client"
+require_relative "dog/downloader"
 require_relative "dog/cli"
 
 # Main Dog module.

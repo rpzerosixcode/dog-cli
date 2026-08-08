@@ -11,9 +11,11 @@ module Dog
     # Initializes the CLI with a client.
     #
     # @param client [Client] the HTTP client used to fetch dog images
-    def initialize(*args, client: Client.new)
+    # @param downloader [Downloader] the downloader used to save images locally
+    def initialize(*args, client: Client.new, downloader: Downloader.new)
       super(*args)
       @client = client
+      @downloader = downloader
     end
 
     desc "random", "Fetches random dog images"
@@ -27,6 +29,9 @@ module Dog
         $ dog random --breed hound-afghan     # Fetch a random hound-afghan image
         $ dog random --breed hound --count 2  # Fetch two random hound images
         $ dog random --format json            # Output as JSON
+        $ dog random --download               # Save image to ~/dog_images/
+        $ dog random --download --output ./pics  # Save to custom directory
+        $ dog random --count 3 --download     # Save multiple images locally
     LONGDESC
     method_option :breed, type: :string, aliases: "-b",
                           desc: "Fetch images for a specific breed (e.g. hound-afghan)"
@@ -35,11 +40,14 @@ module Dog
     method_option :format, type: :string, aliases: "-f", default: "plain",
                            enum: %w[plain json],
                            desc: "Output format: plain or json (default: plain)"
+    method_option :download, type: :boolean, aliases: "-d",
+                             desc: "Save images to the local output directory"
+    method_option :output, type: :string, aliases: "-o",
+                           desc: "Directory to save images to (default: ~/dog_images)"
     def random
       count = validate_count!(options[:count])
-      images = client.random_image(count: count, breed: options[:breed])
-      images = [images] unless images.is_a?(Array)
-      output_images(images)
+      images = fetch_images(count)
+      options[:download] ? download_images(images) : output_images(images)
     rescue Errors::APIError => e
       warn "Error: #{e.message}"
       warn "Tip: Use `dog breeds` to see available breeds." if options[:breed]
@@ -78,7 +86,32 @@ module Dog
 
     private
 
-    attr_reader :client
+    attr_reader :client, :downloader
+
+    def fetch_images(count)
+      images = client.random_image(count: count, breed: options[:breed])
+      images.is_a?(Array) ? images : [images]
+    end
+
+    def download_images(images)
+      downloader = build_downloader
+      images.each do |url|
+        feedback "Downloading #{url}..."
+        path = downloader.download(url)
+        feedback "Saved to #{path}"
+      end
+      feedback "Downloaded #{images.size} image(s) successfully."
+    end
+
+    def build_downloader
+      return downloader unless options[:output]
+
+      Downloader.new(options[:output])
+    end
+
+    def feedback(message)
+      warn message
+    end
 
     def validate_count!(count)
       count = count.to_i

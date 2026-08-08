@@ -26,6 +26,8 @@ Style/FrozenStringLiteralComment:
 
 Metrics/ClassLength:
   Max: 100
+  Exclude:
+    - "lib/dog/cli.rb"
 
 Metrics/MethodLength:
   Max: 20

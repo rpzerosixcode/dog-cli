@@ -27,48 +27,18 @@ Objective: Expand the possible use cases of the tool.
 - [x] Improve navigation between commands
 
 
-# v0.3.0 — Image Management
+## v0.3.0 — Image Management
 
-Objective: Add features for interacting with the results.
+Objective: Allow users to manage fetched images locally.
 
 ### Features
-- [ ] Allow saving images locally
-- [ ] Improve organization of generated files
-- [ ] Add more control over the actions performed
+
+- [x] Allow saving images locally
+- [x] Add more control over the actions performed
 
 ### User Experience
-- [ ] Improve presentation of information
-- [ ] Add feedback during operations
 
-
-# v0.4.0 — Quality and Stability
-
-Objective: Make the project more reliable for continuous use.
-
-### Quality
-- [ ] Expand test coverage
-- [ ] Improve security and reliability
-- [ ] Ensure consistency in the behavior of existing features
-
-### Stability
-- [ ] Improve handling of unexpected situations
-- [ ] Improve overall tool performance
-
-
-# v0.5.0 — Project Professionalization
-
-Objective: Prepare the project for collaboration and maintenance.
-
-### Development
-- [ ] Improve development workflow
-- [ ] Standardize project processes
-- [ ] Facilitate maintenance and evolution
-
-### Documentation
-- [ ] Complete usage documentation
-- [ ] Add practical examples
-- [ ] Create a guide for contributors
-- [ ] Document important project decisions
+- [x] Add feedback during operations
 
 
 # v1.0.0 — Stable Release
