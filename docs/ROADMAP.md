@@ -17,14 +17,14 @@ Objective: Create the first functional version of the tool.
 Objective: Expand the possible use cases of the tool.
 
 ### Features
-- [ ] Allow fetching images by breed
-- [ ] Allow querying available breeds
-- [ ] Allow multiple results in a single run
-- [ ] Offer different output formats
+- [x] Allow fetching images by breed
+- [x] Allow querying available breeds
+- [x] Allow multiple results in a single run
+- [x] Offer different output formats
 
 ### User Experience
-- [ ] Improve tool messages and guidance
-- [ ] Improve navigation between commands
+- [x] Improve tool messages and guidance
+- [x] Improve navigation between commands
 
 
 # v0.3.0 — Image Management

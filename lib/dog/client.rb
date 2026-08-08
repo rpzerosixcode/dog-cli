@@ -16,19 +16,47 @@ module Dog
       @base_url = base_url
     end
 
-    # Fetches a random dog image URL from the Dog CEO API.
+    # Fetches random dog image URLs from the Dog CEO API.
     #
-    # @return [String] the URL of a random dog image
+    # @param count [Integer] the number of images to fetch (default: 1)
+    # @param breed [String, nil] the breed to fetch images for (default: any breed)
+    # @return [String, Array<String>] a single image URL or an array of image URLs
     # @raise [Errors::APIError] if the API returns an error response
     # @raise [Errors::InvalidResponseError] if the API returns an unexpected response
-    def random_image
-      response = get("/breeds/image/random")
+    def random_image(count: 1, breed: nil)
+      response = get(random_image_path(count: count, breed: breed))
       parse_response(response)
+    end
+
+    # Fetches the list of available breeds from the Dog CEO API.
+    #
+    # @return [Array<String>] the list of available breeds
+    # @raise [Errors::APIError] if the API returns an error response
+    # @raise [Errors::InvalidResponseError] if the API returns an unexpected response
+    def breeds
+      response = get("/breeds/list/all")
+      parse_breeds_response(response)
     end
 
     private
 
     attr_reader :base_url
+
+    def random_image_path(count: 1, breed: nil)
+      if breed
+        "/breed/#{breed_path(breed)}/images/random#{count_suffix(count)}"
+      else
+        "/breeds/image/random#{count_suffix(count)}"
+      end
+    end
+
+    def breed_path(breed)
+      breed.tr("-", "/")
+    end
+
+    def count_suffix(count)
+      count > 1 ? "/#{count}" : ""
+    end
 
     def get(path)
       uri = URI("#{base_url}#{path}")
@@ -41,6 +69,14 @@ module Dog
       validate_payload!(body)
 
       body["message"]
+    end
+
+    def parse_breeds_response(response)
+      body = parse_body(response)
+      validate_success!(response, body)
+      validate_breeds_payload!(body)
+
+      body["message"].keys.sort
     end
 
     def parse_body(response)
@@ -56,7 +92,15 @@ module Dog
     end
 
     def validate_payload!(body)
-      return if body["status"] == "success" && body["message"].is_a?(String)
+      message = body["message"]
+      valid = body["status"] == "success" && (message.is_a?(String) || message.is_a?(Array))
+      return if valid
+
+      raise Errors::InvalidResponseError, "Unexpected response from Dog CEO API"
+    end
+
+    def validate_breeds_payload!(body)
+      return if body["status"] == "success" && body["message"].is_a?(Hash)
 
       raise Errors::InvalidResponseError, "Unexpected response from Dog CEO API"
     end
