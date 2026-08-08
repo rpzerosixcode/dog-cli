@@ -13,9 +13,9 @@ AllCops:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-# Line ending consistency according to the operating system
+# Line ending consistency: use LF for cross-platform compatibility
 Layout/EndOfLine:
-  EnforcedStyle: native
+  EnforcedStyle: lf
 
 # Language/region of comments and documentation in English
 Style/Documentation:

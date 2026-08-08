@@ -46,12 +46,12 @@ Objective: Allow users to manage fetched images locally.
 Objective: Deliver a complete, reliable version ready for users.
 
 ### Finalization
-- [ ] Review all main features
-- [ ] Ensure application stability
-- [ ] Finalize documentation
-- [ ] Validate quality of the final version
+- [x] Review all main features
+- [x] Ensure application stability
+- [x] Finalize documentation
+- [x] Validate quality of the final version
 
 ### Publication
-- [ ] Publish official version
-- [ ] Make public release available
-- [ ] Record version history
+- [x] Publish official version
+- [x] Make public release available
+- [x] Record version history

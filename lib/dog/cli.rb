@@ -18,6 +18,11 @@ module Dog
       @downloader = downloader
     end
 
+    # Ensures Thor exits with a non-zero status code on errors.
+    def self.exit_on_failure?
+      true
+    end
+
     desc "random", "Fetches random dog images"
     long_desc <<~LONGDESC
       Fetches random dog images from the Dog CEO API.

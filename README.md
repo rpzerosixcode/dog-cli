@@ -52,6 +52,16 @@ dog breeds --format json
 
 The `--format` (or `-f`) option accepts `plain` (default, one result per line) or `json`.
 
+### Download images locally
+
+```bash
+dog random --download
+dog random --download --output ./pics
+dog random --count 3 --download
+```
+
+The `--download` (or `-d`) option saves fetched images to the local output directory. By default, images are saved to `~/dog_images/`. Use `--output` (or `-o`) to specify a custom directory. Progress messages are printed to stderr during the download.
+
 ### List available dog breeds
 
 ```bash
@@ -76,11 +86,13 @@ The `list` command is an alias for `breeds`.
 
 ## Options
 
-| Option            | Alias | Applies to     | Description                                            |
-|-------------------|-------|----------------|--------------------------------------------------------|
-| `--breed=BREED`   | `-b`  | `random`       | Fetch images for a specific breed (e.g. `hound-afghan`)|
-| `--count=N`       | `-n`  | `random`       | Number of images to fetch (default: 1)                 |
-| `--format=FORMAT` | `-f`  | `random`, `breeds`, `list` | Output format: `plain` or `json` (default: `plain`) |
+| Option            | Alias | Applies to                       | Description                                            |
+|-------------------|-------|----------------------------------|--------------------------------------------------------|
+| `--breed=BREED`   | `-b`  | `random`                         | Fetch images for a specific breed (e.g. `hound-afghan`)|
+| `--count=N`       | `-n`  | `random`                         | Number of images to fetch (default: 1)                 |
+| `--format=FORMAT` | `-f`  | `random`, `breeds`, `list`       | Output format: `plain` or `json` (default: `plain`)    |
+| `--download`      | `-d`  | `random`                         | Save images to the local output directory              |
+| `--output=DIR`    | `-o`  | `random` (with `--download`)     | Directory to save images to (default: `~/dog_images`)  |
 
 ## Project Structure
 
@@ -95,6 +107,8 @@ dog-cli/
 ├── README.md                  # Project documentation
 ├── dog-cli.gemspec            # Gem specification
 ├── docs/
+│   ├── ARCHITECTURE.md        # Architecture documentation
+│   ├── CHANGELOG.md           # Version history
 │   └── ROADMAP.md             # Project roadmap
 ├── exe/
 │   └── dog                    # CLI executable
@@ -103,22 +117,42 @@ dog-cli/
 │   └── dog/
 │       ├── cli.rb             # Command line interface (Thor)
 │       ├── client.rb          # HTTP client (Net::HTTP) for the Dog CEO API
+│       ├── downloader.rb      # Image download utility
 │       ├── errors.rb          # Custom errors
 │       └── version.rb         # Gem version
 └── spec/
-    └── spec_helper.rb         # Test configuration
+    ├── spec_helper.rb         # Test configuration
     └── dog/
-        └── cli_spec.rb        # CLI tests
-        └── client_spec.rb     # Client tests
+        ├── cli_spec.rb        # CLI tests
+        ├── client_spec.rb     # Client tests
+        └── downloader_spec.rb # Downloader tests
 ```
 
 ## Documentation
 
+- [Architecture](docs/ARCHITECTURE.md) — project structure and design decisions
+- [Changelog](docs/CHANGELOG.md) — version history and changes
 - [Roadmap](docs/ROADMAP.md) — planning of future versions
 
-## Contribution
+## Development
 
-To be defined in the future.
+The default Rake task runs both RuboCop (style enforcement) and RSpec (tests):
+
+```bash
+bundle exec rake
+```
+
+To run tests only:
+
+```bash
+bundle exec rspec
+```
+
+To run RuboCop only:
+
+```bash
+bundle exec rubocop
+```
 
 ## License
 

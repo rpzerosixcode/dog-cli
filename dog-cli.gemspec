@@ -17,17 +17,13 @@ Gem::Specification.new do |spec|
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir.glob("lib/**/*") + %w[LICENSE README.md]
+  spec.files = Dir.glob("lib/**/*") + %w[LICENSE README.md ARCHITECTURE.md CHANGELOG.md exe/dog]
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "thor", "~> 1.3"
   spec.add_dependency "net-http", "~> 0.9"
-
-  spec.add_development_dependency "rspec", "~> 3.13"
-  spec.add_development_dependency "rake", "~> 13.2"
-  spec.add_development_dependency "rubocop", "~> 1.88"
-  spec.add_development_dependency "webmock", "~> 3.26"
+  spec.add_dependency "thor", "~> 1.3"
 end
